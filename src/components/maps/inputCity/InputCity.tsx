@@ -1,31 +1,65 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react'
 import './InputCity.scss'
 import { useDispatch } from 'react-redux'
 import ApiMap from '../apiMap/ApiMap'
 import InputField from './form/InputField'
 import setLocation from '../../../redux/actions/setLocation '
+import apiSwagger from './apiSwaggerLocation'
+import { setActivePoint } from '../../../redux/reducers/carSlice'
 
 const InputCity: React.FC = () => {
   const dispatch = useDispatch()
   const [inputValues, setInputValues] = useState({
     city: '',
     point: '',
+    cityId: null as string | null,
   })
 
+  const { fetchCities, fetchPoints, cities, points } = apiSwagger()
+
   const handleInputChange = (name: string, value: string) => {
-    setInputValues((prevState) => ({ ...prevState, [name]: value }))
+    const truncatedValue = value.substring(0, 150).replace(/^\s+/, '')
+
+    if (name === 'city') {
+      const selectedCity = cities.find((city) => city.name === truncatedValue)
+      setInputValues((prevState) => ({
+        ...prevState,
+        city: truncatedValue,
+        cityId: selectedCity ? selectedCity.id : null,
+      }))
+      fetchCities(truncatedValue)
+    }
+
+    if (name === 'point' && inputValues.city) {
+      setInputValues((prevState) => ({
+        ...prevState,
+        point: truncatedValue,
+      }))
+      fetchPoints(truncatedValue)
+    }
   }
 
+  const filteredPoints = !inputValues.city
+    ? []
+    : points.filter((point) => point.cityId?.name === inputValues.city)
+
+  const addressPoint = filteredPoints.find(
+    (point) => point.name === inputValues.point,
+  )
+
   useEffect(() => {
+    fetchCities(inputValues.city)
+    fetchPoints(inputValues.point)
     dispatch(
       setLocation({
         city: inputValues.city,
         point: inputValues.point,
+        address: addressPoint ? addressPoint.address : '',
         option: '',
       }),
     )
-  }, [inputValues.city, inputValues.point, dispatch])
+    dispatch(setActivePoint({ pointKey: '', reset: true }))
+  }, [inputValues.city, inputValues.point, dispatch, fetchCities, fetchPoints])
 
   return (
     <div className="inputCityContainerMain">
@@ -40,12 +74,15 @@ const InputCity: React.FC = () => {
             labels="Город"
             list="cities"
           />
+
           <datalist id="cities">
-            <option value="Ульяновск" />
-            <option value="Москва" />
-            <option value="Казань" />
-            <option value="Самара" />
+            {cities.map((city) => (
+              <option key={city.id} value={city.name}>
+                {city.name}
+              </option>
+            ))}
           </datalist>
+
           <InputField
             value={inputValues.point}
             onChange={(value) => handleInputChange('point', value)}
@@ -56,13 +93,20 @@ const InputCity: React.FC = () => {
             list="point"
           />
           <datalist id="point">
-            <option value="ул.Ленина" />
-            <option value="ул.Лесная" />
-            <option value="ул.Садовая" />
+            {filteredPoints.map((point) => (
+              <option key={point.id} value={point.name}>
+                {point.name}
+              </option>
+            ))}
           </datalist>
         </div>
         <div className="mapCityContainer">
-          <ApiMap city={inputValues.city} point={inputValues.point} option="" />
+          <ApiMap
+            city={inputValues.city}
+            point={inputValues.point}
+            option=""
+            address={addressPoint?.address ?? inputValues.point}
+          />
         </div>
       </div>
     </div>
