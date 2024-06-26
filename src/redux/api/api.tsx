@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
-import { GeoData } from '../../components/maps/apiMap/geoDataInterface'
+import { GeoData } from '../../components/maps/apiMap/GeoDataInterface'
 import generateGeocodeUrl from './url'
 
 export const fetchData = async (
   city: string,
-  point: string,
+  address: string,
   options: RequestInit,
 ) => {
-  const url = generateGeocodeUrl(city, point)
+  const url = generateGeocodeUrl(city, address)
   try {
     const response = await fetch(url, options)
     const jsonResponse = await response.json()

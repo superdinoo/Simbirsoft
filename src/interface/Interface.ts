@@ -2,6 +2,9 @@
 export interface InputCityProps {
   city: string
   point: string
+  cityId: number
+  pointId: number
+  address: string
   option: string
 }
 
@@ -11,50 +14,52 @@ export interface ChangePageAction {
   [key: string]: string
 }
 
-export interface Car {
-  id: number
-  name: string
-  price: number
-  img: string
-  markNumber: string
-  priceCart: string
-}
-
 export interface OrderProps {
   currentPages: string
   activeCar: {
     name: string
-    price: number
-    priceCart: string
+    priceMin: string
   }
 }
 export interface NamesBtn {
   [key: string]: string
 }
-export interface FilterCar {
+
+export interface CarApi {
+  id: number
+  priceMax: number
+  priceMin: number
+  name: 'string'
+  description: 'string'
+  colors: ['string']
+  number: string
+  categoryId: {
+    idCategory: number
+    name: string
+  }
+  thumbnail: {
+    path: string
+  }
+}
+
+export interface CarCategory {
   id: number
   name: string
-  price: number
-  img: string
-  type: string
-  markNumber: string
-  priceCart: string
 }
 
 export interface InitialStateCar {
   activePoint: {
-    all: boolean
-    eco: boolean
-    premium: boolean
+    [key: string]: boolean
   }
-  filterCar: FilterCar[]
+  filterCar: CarApi[]
   activeCar: {
     id: number | null
     name: string
-    price: number
     markNumber: string
-    priceCart: string
     img: string
+    priceMin: number
+    priceMax: number
+    color: []
   }
 }
 
@@ -65,15 +70,12 @@ export interface InputRatesDate {
 
 export interface InitialStateAdditionally {
   activePointColor: {
-    any: boolean
-    red: boolean
-    blue: boolean
     [key: string]: boolean
   }
   activePointRate: {
-    everyMinute: boolean
-    forADay: boolean
-    [key: string]: boolean
+    rateText: boolean
+    ratePrice: number
+    rateId: number
   }
   activePointOptions: {
     tank: boolean
@@ -81,6 +83,21 @@ export interface InitialStateAdditionally {
     wheel: boolean
     [key: string]: boolean
   }
+  activeRentalPrice: {
+    rentalPrice: number
+  }
+}
+
+export interface RateTypeId {
+  id: number
+  name: string
+  unit: string
+}
+
+export interface Rate {
+  id: number
+  price: number
+  rateTypeId: RateTypeId
 }
 
 export interface PopupTotal {
@@ -101,6 +118,67 @@ export interface InitialStateModalTotal {
     confirm: boolean
     back: boolean
   }
+}
+
+export interface City {
+  id: string
+  name: string
+}
+
+export interface Point {
+  id: string
+  name: string
+  cityId: City | null
+  address: string
+}
+
+export interface DateTimeFormatOptions {
+  year?: 'numeric' | '2-digit'
+  month?: 'numeric' | '2-digit' | 'narrow' | 'short' | 'long'
+  day?: 'numeric' | '2-digit'
+  hour?: 'numeric' | '2-digit'
+  minute?: 'numeric' | '2-digit'
+}
+
+export interface RateDataidPriceName {
+  id: number
+  price: number
+  rateTypeId: {
+    name: string
+  }
+}
+
+export interface InputProps {
+  value: string
+  onChange: (value: string) => void
+  name: string
+  placeholder: string
+  onReset: () => void
+  labels: string
+  list: string
+}
+
+export interface UseLocationInputProps {
+  cities: City[]
+  points: Point[]
+  fetchCities: (query: string) => void
+  fetchPoints: (query: string) => void
+}
+
+export interface OrderPost {
+  id: 0
+  orderStatusId: 0
+  cityId: { id: number; name: string }
+  pointId: { id: number; name: string }
+  carId: { id: number; name: string }
+  color: string
+  dateFrom: number
+  dateTo: number
+  rateId: { id: number; name: string }
+  price: number
+  isFullTank: boolean
+  isNeedChildChair: boolean
+  isRightWheel: boolean
 }
 
 export enum EPath {

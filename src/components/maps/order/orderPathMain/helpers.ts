@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { EPath, RouteData } from 'interface/Interface'
 
 export const calculater = (
@@ -6,18 +7,29 @@ export const calculater = (
   endDatePrice: Date,
   activeOptions: any,
   activePointRate: any,
+  priceMin: number,
 ) => {
   const timeDifferenceMs = endDatePrice.getTime() - startDatePrice.getTime()
-  let totalPrice = 0
+  let totalPrice = priceMin
 
-  if (activePointRate.forADay) {
-    const hours = timeDifferenceMs / (1000 * 60 * 60)
-    const days = hours < 12 ? 1 : Math.ceil(hours / 24)
-    totalPrice += days * 1999
+  const price = activePointRate.ratePrice
+  const trueKey = Object.keys(activePointRate).find(
+    (key) => activePointRate[key] === true,
+  )
+
+  const hours = timeDifferenceMs / (1000 * 60 * 60)
+  const days = hours < 12 ? 1 : Math.ceil(hours / 24)
+  const weeks = Math.ceil(days / 7)
+  const months = Math.ceil(days / 30)
+
+  if (trueKey === 'Сутки') {
+    totalPrice += days * price
   }
-  if (activePointRate.everyMinute) {
-    const minutes = Math.ceil(timeDifferenceMs / (1000 * 60))
-    totalPrice += minutes * 7
+  if (trueKey === 'Неделя') {
+    totalPrice += weeks * price
+  }
+  if (trueKey === 'Месяц') {
+    totalPrice += months * price
   }
   if (activeOptions.tank) {
     totalPrice += 500
