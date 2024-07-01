@@ -2,6 +2,7 @@
 export interface InputCityProps {
   city: string
   point: string
+  address: string
   option: string
 }
 
@@ -101,6 +102,25 @@ export interface InitialStateModalTotal {
     confirm: boolean
     back: boolean
   }
+}
+
+export interface City {
+  id: string
+  name: string
+}
+
+export interface Point {
+  id: string
+  name: string
+  cityId: City | null
+  address: string
+}
+
+export interface LocationsState {
+  cities: City[]
+  points: Point[]
+  isLoading: boolean
+  error: string | null
 }
 
 export enum EPath {
